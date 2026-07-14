@@ -91,17 +91,31 @@ router.get("/me", userMiddleware, async (req, res) => {
   }
 });
 
+// Update the authenticated user's data
 router.patch("/", userMiddleware, async (req, res) => {
   try {
-    const { email, password, ...rest } = req.body;
-    const pass = await req.query.password;
+    const isPasswordChange = req.query.password === "password";
 
-    if (pass == "password") {
-      const currentuser = await User.findById(req.user.id);
-      const hashedPassword = await hashPassword(req.body.currentPassword);
+    if (isPasswordChange) {
+      const { currentPassword, password } = req.body;
+
+      if (!currentPassword || !password) {
+        return res.status(400).json({
+          message: "currentPassword and password are required",
+          success: false,
+        });
+      }
+
+      const currentUser = await User.findById(req.user.id);
+      if (!currentUser) {
+        return res
+          .status(404)
+          .json({ message: "User not found", success: false });
+      }
+
       const isMatch = await comparePassword(
-        req.body.currentPassword,
-        currentuser.password,
+        currentPassword,
+        currentUser.password,
       );
       if (!isMatch) {
         return res.status(400).json({
@@ -110,17 +124,21 @@ router.patch("/", userMiddleware, async (req, res) => {
         });
       }
 
-      await currentuser.updateOne({ password: hashedPassword });
+      const hashedPassword = await hashPassword(password);
+      await currentUser.updateOne({ password: hashedPassword });
+
       return res.status(200).json({
         message: "Password updated successfully",
         success: true,
       });
     }
+
+    const { email, password, ...rest } = req.body;
     const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
+      req.user.id,
       { ...rest },
       { new: true },
-    );
+    ).select("-password");
 
     return res.status(200).json({
       message: "User updated successfully",
@@ -132,13 +150,14 @@ router.patch("/", userMiddleware, async (req, res) => {
   }
 });
 
+// Delete the authenticated user's account
 router.delete("/", userMiddleware, async (req, res) => {
   try {
     const deletedUser = await User.findByIdAndUpdate(
-      req.user._id,
+      req.user.id,
       { deleted: true },
       { new: true },
-    );
+    ).select("-password");
 
     return res.status(200).json({
       message: "User deleted successfully",
