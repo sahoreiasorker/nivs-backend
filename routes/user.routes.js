@@ -93,7 +93,7 @@ router.get("/me", userMiddleware, async (req, res) => {
 
 router.patch("/", userMiddleware, async (req, res) => {
   try {
-    const { email, password, ...res } = req.body;
+    const { email, password, ...rest } = req.body;
     const pass = await req.query.password;
 
     if (pass == "password") {
@@ -118,7 +118,7 @@ router.patch("/", userMiddleware, async (req, res) => {
     }
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      { ...res },
+      { ...rest },
       { new: true },
     );
 
