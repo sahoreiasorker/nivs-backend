@@ -169,9 +169,11 @@ router.delete("/:id", adminMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
     // Delete the user from the database
-    const deletedUser = await User.findByIdAndUpdate(userId, {
-      isDeleted: true,
-    });
+    const deletedUser = await User.findByIdAndUpdate(
+      userId,
+      { isDeleted: true },
+      { new: true },
+    ).select("-password");
     if (!deletedUser) {
       return res.status(404).json({
         success: false,
