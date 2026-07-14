@@ -108,6 +108,7 @@ router.get("/:id", adminMiddleware, async (req, res) => {
     await user.populate("notes");
     await user.populate("images");
     await user.populate("videos");
+    await user.populate("files");
     return res.json({
       success: true,
       data: user,
@@ -124,14 +125,15 @@ router.get("/:id", adminMiddleware, async (req, res) => {
 router.get("/:id/notes", adminMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId)
+      .populate("notes")
+      .select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-    await user.populate("notes");
     return res.json({
       success: true,
       data: user.notes,
@@ -148,14 +150,15 @@ router.get("/:id/notes", adminMiddleware, async (req, res) => {
 router.get("/:id/images", adminMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId)
+      .populate("images")
+      .select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-    await user.populate("images");
     return res.json({
       success: true,
       data: user.images,
@@ -172,14 +175,15 @@ router.get("/:id/images", adminMiddleware, async (req, res) => {
 router.get("/:id/videos", adminMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId)
+      .populate("videos")
+      .select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-    await user.populate("videos");
     return res.json({
       success: true,
       data: user.videos,
@@ -196,14 +200,15 @@ router.get("/:id/videos", adminMiddleware, async (req, res) => {
 router.get("/:id/files", adminMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId).select("-password");
+    const user = await User.findById(userId)
+      .populate("files")
+      .select("-password");
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-    await user.populate("files");
     return res.json({
       success: true,
       data: user.files,
