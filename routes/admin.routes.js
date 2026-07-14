@@ -1,6 +1,7 @@
 import express from "express";
 import adminMiddleware from "../middleware/admin.middleware.js";
 import User from "../model/user.model.js";
+import Upload from "../model/upload.model.js";
 const router = express.Router();
 
 // Get all users (admin only)
@@ -74,6 +75,7 @@ router.patch("/:id", adminMiddleware, async (req, res) => {
   }
 });
 
+// Get a specific user by ID (admin only)
 router.get("/:id", adminMiddleware, async (req, res) => {
   try {
     const userId = req.params.id;
@@ -99,4 +101,125 @@ router.get("/:id", adminMiddleware, async (req, res) => {
   }
 });
 
+// Get all notes for a specific user by ID (admin only)
+router.get("/:id/notes", adminMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    await user.populate("notes");
+    return res.json({
+      success: true,
+      data: user.notes,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// Get all images for a specific user by ID (admin only)
+router.get("/:id/images", adminMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    await user.populate("images");
+    return res.json({
+      success: true,
+      data: user.images,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// Get all videos for a specific user by ID (admin only)
+router.get("/:id/videos", adminMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    await user.populate("videos");
+    return res.json({
+      success: true,
+      data: user.videos,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// Get all files for a specific user by ID (admin only)
+router.get("/:id/files", adminMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    await user.populate("files");
+    return res.json({
+      success: true,
+      data: user.files,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// Get all uploads and populate them by user ID (admin only)
+router.get("/uploads", adminMiddleware, async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const upload = await Upload.find({ user: userId }).populate(
+      "user",
+      "-password",
+    );
+    if (!upload) {
+      return res.status(404).json({
+        success: false,
+        message: "Uploads not found",
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: upload,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 export default router;
