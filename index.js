@@ -12,6 +12,7 @@ import noteRoutes from "./routes/note.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import imageRoutes from "./routes/image.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import upload from "./routes/upload.route.js";
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use(`/api/${version}/notes`, noteRoutes);
 app.use(`/api/${version}/images`, imageRoutes);
 app.use(`/api/${version}/users`, userRoutes);
 app.use(`/api/${version}/admins`, adminRoutes);
+app.use(`/api/${version}/upload`, upload);
 
 app.use((req, res) => {
   res.status(404).json({
