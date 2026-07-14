@@ -200,11 +200,7 @@ router.get("/:id/files", adminMiddleware, async (req, res) => {
 // Get all uploads and populate them by user ID (admin only)
 router.get("/uploads", adminMiddleware, async (req, res) => {
   try {
-    const userId = req.params.id;
-    const upload = await Upload.find({ user: userId }).populate(
-      "user",
-      "-password",
-    );
+    const upload = await Upload.find().populate("user", "-password");
     if (!upload) {
       return res.status(404).json({
         success: false,
