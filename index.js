@@ -33,7 +33,7 @@ app.use(`/api/${version}/files`, fileRoutes);
 app.use(`/api/${version}/notes`, noteRoutes);
 app.use(`/api/${version}/images`, imageRoutes);
 app.use(`/api/${version}/users`, userRoutes);
-app.use(`/api/${version}/admins`, adminRoutes);
+app.use(`/api/${version}/admin`, adminRoutes);
 app.use(`/api/${version}/upload`, upload);
 
 app.use((req, res) => {
