@@ -75,9 +75,66 @@ router.post("/signup", async (req, res) => {
 // Get the authenticated user's data
 router.get("/me", userMiddleware, async (req, res) => {
   try {
+    const user = await User.findById(req.user.id).select("-password");
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found", success: false });
+    }
     return res.json({
       message: "User data retrieved successfully",
-      user: req.user,
+      user,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+});
+
+router.patch("/", userMiddleware, async (req, res) => {
+  try {
+    const { email, password, ...res } = req.body;
+    const pass = await req.query.password;
+
+    if (pass == "password") {
+      const hashedPassword = await hashPassword(password);
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { password: hashedPassword, ...res },
+        { new: true },
+      );
+      return res.status(400).json({
+        message: "Current password is required to update user data",
+        success: false,
+      });
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { ...res },
+      { new: true },
+    );
+
+    return res.json({
+      message: "User updated successfully",
+      user: updatedUser,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message, success: false });
+  }
+});
+
+router.delete("/", userMiddleware, async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { deleted: true },
+      { new: true },
+    );
+
+    return res.json({
+      message: "User deleted successfully",
+      user: deletedUser,
       success: true,
     });
   } catch (error) {
