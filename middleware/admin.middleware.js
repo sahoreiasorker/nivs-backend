@@ -8,7 +8,6 @@ const adminMiddleware = async (req, res, next) => {
       return res.status(401).json({ message: "Unauthorized", success: false });
     }
     const verified = await verifyToken(token);
-    console.log("Verified user:", verified);
     if (!verified) {
       return res.status(401).json({ message: "Unauthorized", success: false });
     }
