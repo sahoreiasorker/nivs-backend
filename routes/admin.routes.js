@@ -56,6 +56,21 @@ router.get("/all-files", adminMiddleware, async (req, res) => {
   }
 });
 
+router.get("/all-notes", adminMiddleware, async (req, res) => {
+  try {
+    const notes = await Note.find().populate("user", "-password");
+    return res.json({
+      success: true,
+      data: notes,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 // Get all uploads and populate them by user ID (admin only)
 router.get("/uploads", adminMiddleware, async (req, res) => {
   try {
