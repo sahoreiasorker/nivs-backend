@@ -158,7 +158,6 @@ router.delete("/", userMiddleware, async (req, res) => {
       { deleted: true },
       { new: true },
     ).select("-password");
-
     return res.status(200).json({
       message: "User deleted successfully",
       user: deletedUser,

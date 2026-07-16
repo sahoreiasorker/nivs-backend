@@ -37,6 +37,8 @@ router.post("/", userMiddleware, async (req, res) => {
         .json({ message: "User not found", success: false });
     }
     const video = await Video.create({ ...req.body, user: user._id });
+    user.videos.push(video._id);
+    await user.save();
     return res.status(201).json({
       message: "Video created successfully",
       data: video,
@@ -95,6 +97,8 @@ router.delete("/:id", userMiddleware, async (req, res) => {
         .status(404)
         .json({ message: "Video not found", success: false });
     }
+    user.videos.pull(video._id);
+    await user.save();
     return res.json({
       message: "Video deleted successfully",
       data: video,

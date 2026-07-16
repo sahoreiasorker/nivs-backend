@@ -17,6 +17,8 @@ router.post("/", userMiddleware, async (req, res) => {
       user: user._id,
       ...req.body,
     });
+    user.images.push(image._id);
+    await user.save();
     return res.status(201).json({
       message: "Image created successfully",
       success: true,
@@ -97,6 +99,8 @@ router.delete("/:id", userMiddleware, async (req, res) => {
         .status(404)
         .json({ message: "Image not found", success: false });
     }
+    user.images.pull(image._id);
+    await user.save();
     return res.status(200).json({
       message: "Image deleted successfully",
       success: true,

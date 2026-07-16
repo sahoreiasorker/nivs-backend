@@ -37,6 +37,8 @@ router.post("/", userMiddleware, async (req, res) => {
         .json({ message: "User not found", success: false });
     }
     const file = await File.create({ ...req.body, user: user._id });
+    user.files.push(file._id);
+    await user.save();
     return res.status(201).json({
       message: "File created successfully",
       data: file,
@@ -95,6 +97,8 @@ router.delete("/:id", userMiddleware, async (req, res) => {
         .status(404)
         .json({ message: "File not found", success: false });
     }
+    user.files.pull(file._id);
+    await user.save();
     return res.json({
       message: "File deleted successfully",
       data: file,

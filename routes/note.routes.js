@@ -37,6 +37,8 @@ router.post("/", userMiddleware, async (req, res) => {
         .json({ message: "User not found", success: false });
     }
     const note = await Note.create({ ...req.body, user: user._id });
+    user.notes.push(note._id);
+    await user.save();
     return res.status(201).json({
       message: "Note created successfully",
       data: note,
@@ -95,6 +97,8 @@ router.delete("/:id", userMiddleware, async (req, res) => {
         .status(404)
         .json({ message: "Note not found", success: false });
     }
+    user.notes.pull(note._id);
+    await user.save();
     return res.json({
       message: "Note deleted successfully",
       data: note,
